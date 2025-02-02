@@ -1,0 +1,53 @@
+version: "3.8"
+services:
+  mysql:
+    image: mysql:8.0
+    restart: always
+    env_file:
+      - .env.docker
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "${MYSQL_USER}",
+          "-p${MYSQL_PASSWORD}"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  init:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c "sleep 10 && bunx prisma generate && bunx prisma db push"
+    env_file:
+      - .env.docker
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.docker
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+
+volumes:
+  mysql_data:

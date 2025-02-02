@@ -1,0 +1,70 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+enum BookingType {
+    DAILY
+    WEEKLY
+    MONTHLY
+    ONCE
+}
+
+enum RepeatType {
+    EVERY_DAY
+    EVERY_WEEK
+    EVERY_MONTH
+    NONE
+}
+
+enum RepeatDay {
+    MONDAY
+    TUESDAY
+    WEDNESDAY
+    THURSDAY
+    FRIDAY
+    SATURDAY
+    SUNDAY
+}
+
+model Booking {
+    bookingId            String      @id @default(uuid()) @db.VarChar(12)
+    bookingName          String      @db.VarChar(100)
+    bookingDESC          String      @db.Text
+    startTime            DateTime
+    endTime              DateTime
+    createdBy            String      @db.VarChar(45)
+    modifiedBy           String      @db.VarChar(45)
+    type                 BookingType
+    repeatType           RepeatType? @default(NONE)
+    repeatEvery          String?     @db.VarChar(45)
+    repeatDay            RepeatDay?
+    repeatEndDate        DateTime?   @db.Date
+    lastUpdate           DateTime    @default(dbgenerated("CURRENT_TIMESTAMP")) @db.Timestamp
+    building             Building    @relation(fields: [buildings_buildingId], references: [buildingId])
+    buildings_buildingId String      @db.VarChar(30)
+}
+
+model Building {
+    buildingId String    @id @db.VarChar(30)
+    floor      Int
+    bookings   Booking[]
+    rooms      Room[]
+}
+
+enum RoomStatus {
+    AVAILABLE
+    UNAVAILABLE
+    MAINTENANCE
+}
+
+model Room {
+    roomId               String     @id @db.VarChar(7)
+    roomStatus           RoomStatus @default(AVAILABLE)
+    building             Building   @relation(fields: [buildings_buildingId], references: [buildingId])
+    buildings_buildingId String     @db.VarChar(30)
+}
