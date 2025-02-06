@@ -1,5 +1,5 @@
-import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import express from "express";
+import { PrismaClient } from "@prisma/client";
 
 /**
  * @swagger
@@ -28,7 +28,7 @@ import { PrismaClient } from '@prisma/client';
  *     responses:
  *       201:
  *         description: Room created successfully
- * 
+ *
  * /api/rooms/{id}/status:
  *   patch:
  *     summary: Update room status
@@ -58,7 +58,7 @@ const router = express.Router();
 const prisma = new PrismaClient();
 
 // Get all rooms
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const rooms = await prisma.room.findMany({
       include: {
@@ -72,7 +72,7 @@ router.get('/', async (req, res) => {
 });
 
 // Get room by ID
-router.get('/:id', async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const room = await prisma.room.findUnique({
       where: { roomId: req.params.id },
@@ -81,7 +81,7 @@ router.get('/:id', async (req, res) => {
       }
     });
     if (!room) {
-      return res.status(404).json({ error: 'Room not found' });
+      return res.status(404).json({ error: "Room not found" });
     }
     res.json(room);
   } catch (error) {
@@ -90,7 +90,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Create room
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const room = await prisma.room.create({
       data: req.body
@@ -102,7 +102,7 @@ router.post('/', async (req, res) => {
 });
 
 // Update room
-router.put('/:id', async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     const room = await prisma.room.update({
       where: { roomId: req.params.id },
@@ -115,7 +115,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Update room status
-router.patch('/:id/status', async (req, res) => {
+router.patch("/:id/status", async (req, res) => {
   try {
     const { roomStatus } = req.body;
     const room = await prisma.room.update({
@@ -128,8 +128,9 @@ router.patch('/:id/status', async (req, res) => {
   }
 });
 
+// FOor testing
 // Delete room
-router.delete('/:id', async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     await prisma.room.delete({
       where: { roomId: req.params.id }

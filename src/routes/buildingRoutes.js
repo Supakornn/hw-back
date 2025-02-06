@@ -1,5 +1,5 @@
-import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import express from "express";
+import { PrismaClient } from "@prisma/client";
 
 /**
  * @swagger
@@ -28,7 +28,7 @@ import { PrismaClient } from '@prisma/client';
  *     responses:
  *       201:
  *         description: Building created successfully
- * 
+ *
  * /api/buildings/{id}:
  *   get:
  *     summary: Get building by ID
@@ -50,7 +50,7 @@ const router = express.Router();
 const prisma = new PrismaClient();
 
 // Get all buildings
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const buildings = await prisma.building.findMany({
       include: {
@@ -65,7 +65,7 @@ router.get('/', async (req, res) => {
 });
 
 // Get building by ID
-router.get('/:id', async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const building = await prisma.building.findUnique({
       where: { buildingId: req.params.id },
@@ -75,7 +75,7 @@ router.get('/:id', async (req, res) => {
       }
     });
     if (!building) {
-      return res.status(404).json({ error: 'Building not found' });
+      return res.status(404).json({ error: "Building not found" });
     }
     res.json(building);
   } catch (error) {
@@ -83,8 +83,9 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// For Testing Only
 // Create building
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const building = await prisma.building.create({
       data: req.body
@@ -96,7 +97,7 @@ router.post('/', async (req, res) => {
 });
 
 // Update building
-router.put('/:id', async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     const building = await prisma.building.update({
       where: { buildingId: req.params.id },
@@ -109,7 +110,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete building
-router.delete('/:id', async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     await prisma.building.delete({
       where: { buildingId: req.params.id }
@@ -121,4 +122,3 @@ router.delete('/:id', async (req, res) => {
 });
 
 export default router;
-
