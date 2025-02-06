@@ -1,21 +1,26 @@
-FROM oven/bun:1
+FROM node:18-alpine
 
 WORKDIR /app
 
+# Copy package files
+COPY package*.json ./
 
-COPY package.json ./
-COPY bun.lockb ./
+# Install dependencies with production flag
+RUN npm install
 
-
-COPY prisma ./prisma/
-
-
+# Copy application code
 COPY . .
 
-RUN bun install
+# Set production environment
+ENV NODE_ENV=production
+ENV PORT=80
 
-RUN bunx prisma generate
+# Expose port
+EXPOSE 80
 
-EXPOSE 3000
+# Add health check
+HEALTHCHECK --interval=30s --timeout=3s \
+  CMD wget -qO- http://localhost:80/health || exit 1
 
-CMD ["bun", "start"]
+# Start command
+CMD ["node", "src/index.js"]
